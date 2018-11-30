@@ -1,0 +1,60 @@
+@import '@/assets/css/variable.scss';
+
+.song-item {
+  height: 104px;
+  border-bottom: 1px solid $borderColor;
+  position: relative;
+
+  &:nth-child(1) {
+    .song-item__index {
+      background: #E80000;
+      color: #fff;
+    }
+  }
+
+  &:nth-child(2) {
+    .song-item__index {
+      background: #FF7200;
+      color: #fff;
+    }
+  }
+
+  &:nth-child(3) {
+    .song-item__index {
+      background: #F8B300;
+      color: #fff;
+    }
+  }
+
+  &__index {
+    position: absolute;
+    left: 30px;
+    top: 34px;
+    font-size: 24px;
+    padding: 2px 16px;
+    border-radius: 16px;
+    color: $textGray;
+  }
+
+  &__download-icon {
+    position: absolute;
+    width: 40px;
+    right: 20px;
+    top: 30px;
+  }
+
+  &__title{
+    font-size: 28px;
+    height: 100%;
+    line-height: 104px;
+    margin-right: 80px;
+
+    &--has-rank {
+      margin-left: 100px;
+    }
+
+    &--no-rank {
+      margin-left: 60px;
+    }
+  }
+}

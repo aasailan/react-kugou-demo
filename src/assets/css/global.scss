@@ -1,0 +1,28 @@
+/* 一行文本溢出显示省略号 */
+:global(.one-line-ellipsis) {
+  overflow: hidden!important;
+  text-overflow: ellipsis!important;
+  white-space: nowrap;
+}
+
+:global(.app) {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+}
+
+:global(.page) {
+  position: absolute;
+  top: 102px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  overflow: scroll;
+}
+
+:global(a) {
+  text-decoration:none; 
+  color:#333; 
+}

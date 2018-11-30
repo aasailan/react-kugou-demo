@@ -1,0 +1,17 @@
+@import '@/assets/css/variable.scss';
+
+.song-info__bg {
+  background-size: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 500px;
+}
+
+.song-info__desc {
+  padding: 36px 80px 36px 36px;
+}
+
+.div-line {
+  height: 40px;
+  background: rgb(241, 241, 241);
+}

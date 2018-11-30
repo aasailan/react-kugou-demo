@@ -1,0 +1,20 @@
+.header-bar {
+  height: 86px;
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  color: #fff;
+  position: absolute;
+  line-height: 86px;
+  top: 102px;
+  left: 0px;
+  width: 100%;
+  z-index: 2;
+  padding: 0px 50px;
+  &__back-icon {
+    position: absolute;
+    width: 24px;
+    top: 24px;
+    left: 30px;
+  }
+}

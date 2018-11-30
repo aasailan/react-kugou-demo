@@ -1,0 +1,23 @@
+@import '@/assets/css/variable.scss';
+
+.group {
+  font-size: 28px;
+  margin: 40px 20px;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid $borderColor;
+  border-bottom: 0px; 
+
+  &-item {
+    background-color: #fbfbfb;
+    border-bottom: 1px solid $borderColor;
+    height: 84px;
+    // line-height: 84px;
+    padding: 20px;
+
+    &__right-icon {
+      float: right;
+      width: 20px;
+    }
+  }
+}

@@ -1,0 +1,55 @@
+@import '@/assets/css/variable.scss';
+
+.rank-bg {
+  height: 400px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100%;
+
+  position: relative;
+
+  &__title {
+    height: 86px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background: -webkit-linear-gradient(bottom,rgba(0,0,0,.6),rgba(0,0,0,0));
+    line-height: 86px;
+    font-size: 30px;
+    color: #fff;
+    padding: 0px 40px;
+  }
+}
+
+// .song-list {
+//   &:nth-child()
+// }
+
+// .song-item {
+//   height: 104px;
+//   border-bottom: 1px solid $borderColor;
+//   position: relative;
+
+//   &__index {
+//     position: absolute;
+//     left: 30px;
+//     top: 34px;
+//     font-size: 24px;
+//   }
+
+//   &__download-icon {
+//     position: absolute;
+//     width: 40px;
+//     right: 20px;
+//     top: 30px;
+//   }
+
+//   &__title{
+//     font-size: 28px;
+//     height: 100%;
+//     line-height: 104px;
+//     margin-left: 80px;
+//     margin-right: 80px;
+//   }
+// }

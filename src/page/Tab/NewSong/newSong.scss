@@ -1,0 +1,17 @@
+@import '@/assets/css/variable.scss';
+
+.song-item {
+  height: 104px;
+  position: relative;
+  padding: 20px 40px;
+  border-bottom: 1px solid $borderColor;
+  font-size: 28px;
+  line-height: 60px;
+
+  &__download-img {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    width: 40px;
+  }
+}
