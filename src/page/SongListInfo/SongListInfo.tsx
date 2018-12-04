@@ -2,12 +2,12 @@
  * @Author: qiao 
  * @Date: 2018-11-27 18:46:50 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-28 19:34:37
+ * @Last Modified time: 2018-12-04 14:12:00
  * 歌单详情页
  */
 import Api from '@/api';
 import { ISong } from '@/api/api';
-import Loading from '@/components/Loading/Loading';
+import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
 import SongItem from '@/components/SongItem/SongItem';
 import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
 import { IHeaderState } from '@/redux/reducers/header';
@@ -86,7 +86,7 @@ class SongListInfo extends React.PureComponent<IProps, IState> {
     if (!bg || !songs || !bgdesc) {
       return (
         <div className="page">
-          <Loading/>
+          <CustomLoader className="page-loader"/>
         </div>
       );
     }

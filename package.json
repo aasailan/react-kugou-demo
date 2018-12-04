@@ -27,6 +27,7 @@
     "promise": "8.0.1",
     "raf": "3.4.0",
     "react": "^16.6.3",
+    "react-content-loader": "^3.4.1",
     "react-dev-utils": "^5.0.2",
     "react-dom": "^16.6.3",
     "react-redux": "^5.1.1",

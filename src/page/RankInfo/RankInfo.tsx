@@ -2,12 +2,13 @@
  * @Author: qiao 
  * @Date: 2018-11-25 21:17:38 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-28 19:00:56
+ * @Last Modified time: 2018-12-04 09:07:03
  * 排行榜详情
  */
 import Api from '@/api';
 import { ISong } from '@/api/api';
-import Loading from '@/components/Loading/Loading';
+import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
+// import Loading from '@/components/Loading/Loading';
 import SongItem from '@/components/SongItem/SongItem';
 import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
 import { IHeaderState } from '@/redux/reducers/header';
@@ -25,8 +26,13 @@ export interface IRouteState {
   title: string;
 }
 
+// NOTE: 路由参数的value都会变成string，就算传入的时候是数字
+export interface IRouteParams {
+  id: string;
+}
+
 interface IProps extends ReturnType<typeof mapDispatchToProps>, 
-  RouteComponentProps<any, any, IRouteState> {
+  RouteComponentProps<IRouteParams, any, IRouteState> {
 
 }
 
@@ -45,19 +51,29 @@ class RankInfo extends React.PureComponent<IProps, IState> {
     songs: null
   };
 
+  dataPrefix = 'rankInfo';
+
    // TODO: 需要验证 是否可以复用？
    private source = axios.CancelToken.source();
 
-  // changeHeaderBar = () => {
-  //   const { setHeader } = this.props;
-  //   setHeader({
-  //     title: '酷狗飙升榜',
-  //     bg: 'rgba(43, 162, 251, 1)'
-  //   });
-  // }
+  constructor(props: IProps) {
+    super(props);
+
+    // TODO: 需要思考如何处理赋值异常。
+    const { match: { params: { id } } } = this.props;
+    const data = localStorage.getItem(`${this.dataPrefix}${id}`);
+    if (data) {
+      const preState: IState = JSON.parse(data);
+      this.state = {
+        ...preState,
+        bg: 'rgba(43, 162, 251, 0)'
+      };
+    }
+  }
 
   async componentDidMount() {
-    // this.isMount = true;
+
+    // TODO: 需要思考如果出现赋值错误如何解决
     const { match: { params }, setHeader, location: { state } } = this.props;
     // 需要从路由中获取title参数
     setHeader({
@@ -66,8 +82,9 @@ class RankInfo extends React.PureComponent<IProps, IState> {
       bg: 'rgba(43, 162, 251, 0)'
     });
     
+    // 每次加载都更新数据
     try {
-      const { data: { info: { banner7url }, songs: { list }} } = await Api.getRankInfo({ rankid: params.id }, this.source.token);
+      const { data: { info: { banner7url }, songs: { list }} } = await Api.getRankInfo({ rankid: params.id as any }, this.source.token);
       const bg = banner7url.replace('{size}', '400');
       const songs = list;
       const updateTime = this.getToday(new Date());
@@ -76,6 +93,11 @@ class RankInfo extends React.PureComponent<IProps, IState> {
         songs,
         updateTime 
       });
+      localStorage.setItem(`${this.dataPrefix}${params.id}`, JSON.stringify({
+        bg,
+        songs,
+        updateTime
+      }));
     } catch (e) {
       console.error(e.message || e);
     }
@@ -105,7 +127,7 @@ class RankInfo extends React.PureComponent<IProps, IState> {
     if (!bg || !songs) {
       return (
         <div className="page">
-          <Loading/>
+          <CustomLoader className="page-loader"/>
         </div>
       );
     }

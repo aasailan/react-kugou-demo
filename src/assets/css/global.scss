@@ -26,3 +26,7 @@
   text-decoration:none; 
   color:#333; 
 }
+
+:global(.page-loader) {
+  margin-top: 160px;
+}

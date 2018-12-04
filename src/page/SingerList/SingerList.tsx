@@ -2,13 +2,13 @@
  * @Author: qiao 
  * @Date: 2018-11-29 11:07:48 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-29 18:58:25
+ * @Last Modified time: 2018-12-04 14:11:24
  * 歌手列表
  */
 import Api from '@/api';
 import { ISinger } from '@/api/api';
 import CardItem from '@/components/CardItem/CardItem';
-import Loading from '@/components/Loading/Loading';
+import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
 import { IRouteState as ISingerInfoRouteState } from '@/page/SingerInfo/SingerInfo';
 import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
 import { IHeaderState } from '@/redux/reducers/header';
@@ -76,7 +76,7 @@ class SingerList extends React.PureComponent<IProps, IState> {
     if (!singers) {
       return (
         <div className="page">
-          <Loading/>
+          <CustomLoader className="page-loader"/>
         </div>
       );
     }

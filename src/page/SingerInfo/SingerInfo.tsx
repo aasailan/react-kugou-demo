@@ -2,12 +2,12 @@
  * @Author: qiao 
  * @Date: 2018-11-29 18:34:52 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-29 19:23:47
+ * @Last Modified time: 2018-12-04 14:10:25
  * 歌手信息页面
  */
 import Api from '@/api';
 import { ISong } from '@/api/api';
-import Loading from '@/components/Loading/Loading';
+import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
 import SongItem from '@/components/SongItem/SongItem';
 import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
 import { IHeaderState } from '@/redux/reducers/header';
@@ -84,7 +84,7 @@ class SingerInfo extends React.PureComponent<IProps, IState> {
     if (!bg || !songs || !bgdesc) {
       return (
         <div className="page">
-          <Loading/>
+          <CustomLoader className="page-loader"/>
         </div>
       );
     }
