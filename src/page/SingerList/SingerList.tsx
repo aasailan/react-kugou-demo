@@ -74,7 +74,14 @@ class SingerList extends React.PureComponent<IProps> {
 
     const { data, children } = this.props;
     if (!data) {
-      return children;
+      const childrenWithProps = React.Children.map(children, child => 
+        React.cloneElement(child as any, { className: 'page-loading' })
+      );
+      return (
+        <div className="page">
+          {childrenWithProps}
+        </div>
+      );
     }
 
     const { singers } = data;

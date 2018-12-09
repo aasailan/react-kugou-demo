@@ -2,7 +2,7 @@
  * @Author: qiao 
  * @Date: 2018-12-04 15:33:55 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-09 11:05:38
+ * @Last Modified time: 2018-12-09 15:49:15
  * TODO: 改成使用HOC的方式
  */
 import { NetworkError } from '@/api/networkError';
@@ -58,7 +58,12 @@ export function pageWrapperGenerator(component: React.ComponentClass,
     updateError = (e: Error) => {
       console.error(e);
       if (e instanceof NetworkError) {
-        // TODO: 在此进行showtoast，显示错误信息
+
+        if (e.type === NetworkError.ERROR_TYPE.USER_CANCEL) {
+          // 用户主动取消，不做任何响应
+          return;
+        }
+
         // 网络错误
         this.setState({
           error: {

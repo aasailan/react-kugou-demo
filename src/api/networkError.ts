@@ -26,7 +26,16 @@ export class MyError extends Error {
 }
 
 export class NetworkError extends MyError {
-  constructor(msg: string) {
+
+  static ERROR_TYPE = {
+    USER_CANCEL: 0,
+    NETWORK_ERROR: 1
+  };
+
+  type: Number;
+
+  constructor(msg: string, type = NetworkError.ERROR_TYPE.NETWORK_ERROR) {
     super(msg);
+    this.type = type;
   }
 }

@@ -30,3 +30,10 @@
 :global(.page-loader) {
   margin-top: 160px;
 }
+
+:global(.page-loading) {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

@@ -33,9 +33,9 @@ service.interceptors.response.use((response) => {
   return response;
 }, error => {
   // NOTE: 如果请求被取消，则会运行这个地方
-  console.error(error);
-  // NOTE: 需要判断是否是用户主动取消，若是主动取消，
-  // 则不应该抛出error，或者抛出error但是在应用层不处理
+  if (axios.isCancel(error)) {
+    throw new NetworkError(error, NetworkError.ERROR_TYPE.USER_CANCEL);
+  }
   throw new NetworkError(error);
 });
 

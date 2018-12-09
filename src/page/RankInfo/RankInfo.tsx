@@ -2,7 +2,7 @@
  * @Author: qiao 
  * @Date: 2018-11-25 21:17:38 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-09 11:06:11
+ * @Last Modified time: 2018-12-09 18:51:31
  * 排行榜详情
  */
 import Api from '@/api';
@@ -43,14 +43,18 @@ interface IProps extends ReturnType<typeof mapDispatchToProps>,
 
 class RankInfo extends React.PureComponent<IProps> {
 
-   private source = axios.CancelToken.source();
+  private source = axios.CancelToken.source();
+
+  private frameId: number | null = null;
 
   constructor(props: IProps) {
     super(props);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     this.setData();
+    // 取消请求测试
+    // this.source.cancel('cancel by unmount');
   }
 
   async setData() {
@@ -71,8 +75,32 @@ class RankInfo extends React.PureComponent<IProps> {
         updateTime
       });
     } catch (e) {
+      console.log('catch error');
       updateError(e);
     }
+  }
+
+  // 泛型传入currentTarget类型
+  setHeaderBarStyle: React.UIEventHandler<HTMLDivElement> = (event) => {
+    const target = event.currentTarget;
+    if (this.frameId === null) {
+      this.frameId = window.requestAnimationFrame(() => {
+        // https://javascript.info/size-and-scroll
+        // console.log(target.scrollTop);
+        const { setHeader } = this.props;
+        const { scrollTop } = target;
+        let opacity;
+        if (scrollTop <= 200) {
+          opacity = scrollTop / 200;
+        } else {
+          opacity = 1;
+        }
+        setHeader({
+          bg: `rgba(43, 162, 251, ${opacity})`
+        });
+        this.frameId = null;
+      });
+    };
   }
 
   getToday(time: Date){
@@ -96,13 +124,24 @@ class RankInfo extends React.PureComponent<IProps> {
 
     const { data, children } = this.props;
     if (!data) {
-      return children;
+      // NOTE: how to pass data to props.children
+      // https://stackoverflow.com/questions/32370994/how-to-pass-props-to-this-props-children
+      // https://frontarm.com/articles/passing-data-props-children/
+      // https://react.docschina.org/docs/react-api.html#reactchildren
+      const childrenWithProps = React.Children.map(children, child => 
+        React.cloneElement(child as any, { className: 'page-loading' })
+      );
+      return (
+        <div className="page">
+          {childrenWithProps}
+        </div>
+      );
     }
 
     const { songs, bg, updateTime } = data;
 
     return (
-      <div className="page">
+      <div className="page" onScroll={this.setHeaderBarStyle}>
         <div styleName="rank-bg" style={{ backgroundImage: `url(${bg})`  }}>
           <div styleName="rank-bg__title">上次更新时间：{updateTime}</div>
         </div>

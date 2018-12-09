@@ -2,12 +2,13 @@
  * @Author: qiao 
  * @Date: 2018-11-29 18:34:52 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-04 14:10:25
+ * @Last Modified time: 2018-12-09 19:14:17
  * 歌手信息页面
  */
 import Api from '@/api';
 import { ISong } from '@/api/api';
 import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
+import Drawer from '@/components/Drawer/Drawer';
 import SongItem from '@/components/SongItem/SongItem';
 import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
 import { IHeaderState } from '@/redux/reducers/header';
@@ -40,11 +41,7 @@ interface IProps extends ReturnType<typeof mapDispatchToProps>,
 
 class SingerInfo extends React.PureComponent<IProps> {
 
-  // state: IState = {
-  //   bg: null,
-  //   bgdesc: null,
-  //   songs: null
-  // };
+  private frameId: number | null = null;
   
   private source = Axios.CancelToken.source();
 
@@ -82,20 +79,47 @@ class SingerInfo extends React.PureComponent<IProps> {
   componentWillUnmount() {
     this.source.cancel('cancel by unmount');
   }
+
+  setHeaderBarStyle: React.UIEventHandler<HTMLDivElement> = (event) => {
+    const target = event.currentTarget;
+    if (this.frameId === null) {
+      this.frameId = window.requestAnimationFrame(() => {
+        const { setHeader } = this.props;
+        const { scrollTop } = target;
+        let opacity;
+        if (scrollTop <= 200) {
+          opacity = scrollTop / 200;
+        } else {
+          opacity = 1;
+        }
+        setHeader({
+          bg: `rgba(43, 162, 251, ${opacity})`
+        });
+        this.frameId = null;
+      });
+    };
+  }
   
   render() {
 
     const { data, children } = this.props;
     if (!data) {
-      return children;
+      const childrenWithProps = React.Children.map(children, child => 
+        React.cloneElement(child as any, { className: 'page-loading' })
+      );
+      return (
+        <div className="page">
+          {childrenWithProps}
+        </div>
+      );
     }
 
     const { songs, bg, bgdesc } = data;
 
     return (
-      <div className="page">
+      <div className="page" onScroll={this.setHeaderBarStyle}>
         <div styleName="song-info__bg" style={{ backgroundImage: `url(${bg})`}}/>
-        <div styleName="song-info__desc">{ /* TODO: 需要一个上下收缩的动效 */ } {bgdesc}</div>
+        <Drawer text={bgdesc}/>
         <div styleName="div-line"/>
         {
           songs.map((song, index) => (
