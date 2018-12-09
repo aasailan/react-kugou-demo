@@ -2,21 +2,21 @@
  * @Author: qiao 
  * @Date: 2018-11-25 21:17:38 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-04 09:07:03
+ * @Last Modified time: 2018-12-09 11:06:11
  * 排行榜详情
  */
 import Api from '@/api';
 import { ISong } from '@/api/api';
 import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
-// import Loading from '@/components/Loading/Loading';
+// import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
 import SongItem from '@/components/SongItem/SongItem';
 import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
 import { IHeaderState } from '@/redux/reducers/header';
 import axios from 'axios';
 import React from 'react';
 import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
 import { Dispatch } from 'redux';
+import { IPageComponentProps, pageWrapperGenerator } from '..';
 import './rankInfo.scss';
 
 // TODO: 需要做监听滚动，headerbar逐渐变得不透明的动效
@@ -31,80 +31,51 @@ export interface IRouteParams {
   id: string;
 }
 
+interface IData {
+  bg: string;
+  updateTime: string;
+  songs: ISong[];
+}
+
 interface IProps extends ReturnType<typeof mapDispatchToProps>, 
-  RouteComponentProps<IRouteParams, any, IRouteState> {
-
+  IPageComponentProps<IData, IRouteParams, any, IRouteState> {
 }
 
-interface IState {
-  bg: string | null;
-  updateTime: string | null;
-  songs: ISong[] | null;
-}
+class RankInfo extends React.PureComponent<IProps> {
 
-class RankInfo extends React.PureComponent<IProps, IState> {
-
-  // private isMount = false;
-  state: IState = {
-    bg: null,
-    updateTime: null,
-    songs: null
-  };
-
-  dataPrefix = 'rankInfo';
-
-   // TODO: 需要验证 是否可以复用？
    private source = axios.CancelToken.source();
 
   constructor(props: IProps) {
     super(props);
-
-    // TODO: 需要思考如何处理赋值异常。
-    const { match: { params: { id } } } = this.props;
-    const data = localStorage.getItem(`${this.dataPrefix}${id}`);
-    if (data) {
-      const preState: IState = JSON.parse(data);
-      this.state = {
-        ...preState,
-        bg: 'rgba(43, 162, 251, 0)'
-      };
-    }
   }
 
   async componentDidMount() {
+    this.setData();
+  }
 
-    // TODO: 需要思考如果出现赋值错误如何解决
-    const { match: { params }, setHeader, location: { state } } = this.props;
-    // 需要从路由中获取title参数
-    setHeader({
-      isShow: true,
-      title: state.title,
-      bg: 'rgba(43, 162, 251, 0)'
-    });
-    
-    // 每次加载都更新数据
-    try {
+  async setData() {
+    const { match: { params }, setHeader, location: { state }, updateData, updateError } = this.props;
+    try {  
+      setHeader({
+        isShow: true,
+        title: state.title,
+        bg: 'rgba(43, 162, 251, 0)'
+      });
       const { data: { info: { banner7url }, songs: { list }} } = await Api.getRankInfo({ rankid: params.id as any }, this.source.token);
       const bg = banner7url.replace('{size}', '400');
-      const songs = list;
       const updateTime = this.getToday(new Date());
-      this.setState({
+      // throw new Error('test');
+      updateData({
+        songs: list,
         bg,
-        songs,
-        updateTime 
-      });
-      localStorage.setItem(`${this.dataPrefix}${params.id}`, JSON.stringify({
-        bg,
-        songs,
         updateTime
-      }));
+      });
     } catch (e) {
-      console.error(e.message || e);
+      updateError(e);
     }
   }
 
   getToday(time: Date){
-    // const time = new Date()
     const year = time.getFullYear()
     let month: number | string = time.getMonth() + 1
     let date: number | string = time.getDate()
@@ -118,19 +89,17 @@ class RankInfo extends React.PureComponent<IProps, IState> {
   }
 
   componentWillUnmount() {
-    // this.isMount = false;
     this.source.cancel('cancel by unmount');
   }
 
   render() {
-    const { bg, songs, updateTime } = this.state;
-    if (!bg || !songs) {
-      return (
-        <div className="page">
-          <CustomLoader className="page-loader"/>
-        </div>
-      );
+
+    const { data, children } = this.props;
+    if (!data) {
+      return children;
     }
+
+    const { songs, bg, updateTime } = data;
 
     return (
       <div className="page">
@@ -139,21 +108,15 @@ class RankInfo extends React.PureComponent<IProps, IState> {
         </div>
         <div styleName="song-list">
           {
-            songs.map((song, i) => {
-              return (
+            songs.map((song, i) => (
                 <SongItem song={song} key={song.hash} rank={i}/>
-              )
-            })  
+            ))  
           }
         </div>
       </div>
     );
   }
 }
-
-// function mapStateToProps(state: IStoreState) {
-
-// }
 
 function mapDispatchToProps(dispatch: Dispatch<ISetHeaderAction>) {
   return {
@@ -163,4 +126,4 @@ function mapDispatchToProps(dispatch: Dispatch<ISetHeaderAction>) {
   }
 }
 
-export const RankInfoContainer = connect(null, mapDispatchToProps)(RankInfo);
+export const RankInfoPage = pageWrapperGenerator(connect(null, mapDispatchToProps)(RankInfo), CustomLoader);

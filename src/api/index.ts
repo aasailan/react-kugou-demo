@@ -2,12 +2,13 @@
  * @Author: qiao 
  * @Date: 2018-11-25 12:29:37 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-29 19:24:15
+ * @Last Modified time: 2018-12-06 15:56:10
  * api
  */
 import axios, { AxiosPromise, CancelToken } from 'axios';
 import { INewSong, IRankInfo, IRanks, ISingerInfo, 
   ISingerList, ISongListInfo, ISongs } from './api';
+import { NetworkError } from './networkError';
 
 // TODO: 需要区分生产和开发环境
 const API_HOST = 'http://localhost:3000';
@@ -24,14 +25,18 @@ export const service = axios.create({
 service.interceptors.request.use((config) => {
   return config;
 }, error => {
-  return new Error(error);
+  return new NetworkError(error);
 });
 
 service.interceptors.response.use((response) => {
+  // 
   return response;
 }, error => {
   // NOTE: 如果请求被取消，则会运行这个地方
-  throw new Error(error);
+  console.error(error);
+  // NOTE: 需要判断是否是用户主动取消，若是主动取消，
+  // 则不应该抛出error，或者抛出error但是在应用层不处理
+  throw new NetworkError(error);
 });
 
 const Api = {

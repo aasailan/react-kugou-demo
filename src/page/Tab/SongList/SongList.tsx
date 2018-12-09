@@ -2,43 +2,51 @@
  * @Author: qiao 
  * @Date: 2018-11-25 10:40:30 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-28 19:30:16
+ * @Last Modified time: 2018-12-07 15:55:16
  * 歌单列表
  */
 import Api from '@/api';
 import { ISongListItem } from '@/api/api';
 import CardItem from '@/components/CardItem/CardItem';
-import Loading from '@/components/Loading/Loading';
+import { IPageComponentProps, pageWrapperGenerator } from '@/page';
 import { IRouteState as SongListInfoRouteState } from '@/page/SongListInfo/SongListInfo';
 import { LocationDescriptorObject } from 'history';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './songList.scss';
 
-export interface IProps {
-  songs: ISongListItem[],
-  changeData: (data: { songs: ISongListItem[] }, name: 'songListData') => void;
+interface IData {
+  songs: ISongListItem[];
 }
 
-export class SongList extends React.PureComponent<IProps> {
+export class SongList extends React.PureComponent<IPageComponentProps<IData>> {
 
   async componentDidMount() {
-    const { songs, changeData } = this.props;
-    if (!songs) {
+    const { data } = this.props;
+    if (!data || !data.songs) {
+      this.setData();
+    }
+  }
+
+  async setData() {
+    const { updateData, updateError } = this.props;
+    try {
       const { data: { plist: { list: { info }}}} = await Api.getSongs(true);
-      changeData({
+      updateData({
         songs: info
-      }, 'songListData');
+      })
+    } catch (e) {
+      updateError(e);
     }
   }
 
   render() {
-    const { songs } = this.props;
-
-    if (!songs) {
-      return <Loading/>
+    const { data, children } = this.props;
+    if (!data || !data.songs) {
+      return children;
     }
 
+    const { songs } = data;
     return (
       <div>
         {
@@ -60,3 +68,5 @@ export class SongList extends React.PureComponent<IProps> {
     );
   }
 }
+
+export const SongListPage = pageWrapperGenerator(SongList);

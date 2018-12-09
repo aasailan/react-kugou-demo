@@ -13,21 +13,21 @@ export const newSongRoute: IRoute = {
   name: 'NewSong',
   exact: true,
   path: '/tab/newSong',
-  component: asyncComponent(() => import('@/page/Tab/NewSong/NewSong'), 'NewSong')
+  component: asyncComponent(() => import('@/page/Tab/NewSong/NewSong'), 'NewSongPage')
 };
 
 export const rankRoute: IRoute = {
   name: 'Rank',
   exact: true,
   path: '/tab/rank',
-  component: asyncComponent(() => import('@/page/Tab/Rank/Rank'), 'Rank')
+  component: asyncComponent(() => import('@/page/Tab/Rank/Rank'), 'RankPage')
 };
 
 export const songListRoute: IRoute = {
   name: 'SongList',
   exact: true,
   path: '/tab/songList',
-  component: asyncComponent(() => import('@/page/Tab/SongList/SongList'), 'SongList')
+  component: asyncComponent(() => import('@/page/Tab/SongList/SongList'), 'SongListPage')
 };
 
 export const singerRoute: IRoute = {
@@ -48,7 +48,7 @@ export const rankInfoRoute: IRoute = {
   name: 'RankInfo',
   exact: true,
   path: '/rank/info/:id',
-  component: asyncComponent(() => import('@/page/RankInfo/RankInfo'), 'RankInfoContainer')
+  component: asyncComponent(() => import('@/page/RankInfo/RankInfo'), 'RankInfoPage')
 };
 
 export const songListInfoRoute: IRoute = {
@@ -56,21 +56,21 @@ export const songListInfoRoute: IRoute = {
   exact: true,
   // NOTE: 如何将path内的参数定义与组件内的RouteParams接口定义结合起来
   path: '/plist/info/:id',
-  component: asyncComponent(() => import('@/page/SongListInfo/SongListInfo'), 'SongListInfoContainer')
+  component: asyncComponent(() => import('@/page/SongListInfo/SongListInfo'), 'SongListInfoPage')
 };
 
 export const singerListRoute: IRoute = {
   name: 'SingerList',
   exact: true,
   path: '/singer/list/:typeId',
-  component: asyncComponent(() => import('@/page/SingerList/SingerList'), 'SingerListContainer')
+  component: asyncComponent(() => import('@/page/SingerList/SingerList'), 'SingerListPage')
 };
 
 export const singerInfoRoute: IRoute = {
   name: 'SingerInfo',
   exact: true,
   path: '/singer/info/:singerId',
-  component: asyncComponent(() => import('@/page/SingerInfo/SingerInfo'), 'SingerInfoContainer')
+  component: asyncComponent(() => import('@/page/SingerInfo/SingerInfo'), 'SingerInfoPage')
 };
 
 export const routes: IRoute[] = [

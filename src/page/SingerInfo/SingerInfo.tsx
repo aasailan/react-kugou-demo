@@ -14,8 +14,8 @@ import { IHeaderState } from '@/redux/reducers/header';
 import Axios from 'axios';
 import React from 'react';
 import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
 import { Dispatch } from 'redux';
+import { IPageComponentProps, pageWrapperGenerator } from '..';
 import './singerInfo.scss';
 
 export interface IRouteState {
@@ -26,51 +26,56 @@ interface IRouteParams {
   singerId: string;
 }
 
-interface IState {
-  bg: string | null;
-  bgdesc: string | null;
-  songs: ISong[] | null;
+interface IData {
+  bg: string;
+  bgdesc: string;
+  songs: ISong[];
 }
 
+// interface IProps extends ReturnType<typeof mapDispatchToProps>, 
+//   RouteComponentProps<IRouteParams, any, IRouteState> {
+// }
 interface IProps extends ReturnType<typeof mapDispatchToProps>, 
-  RouteComponentProps<IRouteParams, any, IRouteState> {
-}
+  IPageComponentProps<IData, IRouteParams, any, IRouteState> {}
 
-class SingerInfo extends React.PureComponent<IProps, IState> {
+class SingerInfo extends React.PureComponent<IProps> {
 
-  state: IState = {
-    bg: null,
-    bgdesc: null,
-    songs: null
-  };
+  // state: IState = {
+  //   bg: null,
+  //   bgdesc: null,
+  //   songs: null
+  // };
   
   private source = Axios.CancelToken.source();
 
-  async componentDidMount() {
-    const { match: { params: { singerId } }, setHeader, location: { state } } = this.props;
-    // 需要从路由中获取title参数
-    setHeader({
-      isShow: true,
-      title: state.title,
-      bg: 'rgba(43, 162, 251, 0)'
-    });
+  componentDidMount() {
+    this.setData();
+  }
 
+  async setData() {
+    const { match: { params: { singerId } }, setHeader, location: { state }, updateData, updateError } = this.props;
     try {
+      setHeader({
+        isShow: true,
+        title: state.title,
+        bg: 'rgba(43, 162, 251, 0)'
+      });
+
       const { data: { 
         info: { imgurl, intro }, 
         songs: { list }
       }} = await Api.getSingerInfo({ singerId }, this.source.token);
-      console.log('getsingerInfo');
       const bg = imgurl.replace('{size}', '400');
       const bgdesc = intro;
       const songs = list;
-      this.setState({
+      updateData({
         bg,
         bgdesc,
         songs
       });
+
     } catch (e) {
-      console.error(e.message || e);
+      updateError(e);
     }
   }
 
@@ -80,14 +85,12 @@ class SingerInfo extends React.PureComponent<IProps, IState> {
   
   render() {
 
-    const { bg, songs, bgdesc} = this.state;
-    if (!bg || !songs || !bgdesc) {
-      return (
-        <div className="page">
-          <CustomLoader className="page-loader"/>
-        </div>
-      );
+    const { data, children } = this.props;
+    if (!data) {
+      return children;
     }
+
+    const { songs, bg, bgdesc } = data;
 
     return (
       <div className="page">
@@ -112,4 +115,4 @@ function mapDispatchToProps(dispatch: Dispatch<ISetHeaderAction>) {
   }
 }
 
-export const SingerInfoContainer = connect(null, mapDispatchToProps)(SingerInfo);
+export const SingerInfoPage = pageWrapperGenerator(connect(null, mapDispatchToProps)(SingerInfo), CustomLoader) ;
