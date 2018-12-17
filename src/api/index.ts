@@ -2,12 +2,12 @@
  * @Author: qiao 
  * @Date: 2018-11-25 12:29:37 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-06 15:56:10
+ * @Last Modified time: 2018-12-12 13:59:42
  * api
  */
 import axios, { AxiosPromise, CancelToken } from 'axios';
 import { INewSong, IRankInfo, IRanks, ISingerInfo, 
-  ISingerList, ISongListInfo, ISongs } from './api';
+  ISingerList, ISongInfo, ISongListInfo, ISongs } from './api';
 import { NetworkError } from './networkError';
 
 // TODO: 需要区分生产和开发环境
@@ -82,6 +82,20 @@ const Api = {
     token?: CancelToken): AxiosPromise<ISingerInfo> {
     return service.get(`/proxy/singer/info/${singerId}`, {
       params: { json },
+      cancelToken: token
+    });
+  },
+
+  /**
+   * @description 获取歌曲信息
+   * @param {{ hash: string, r: string }} { hash, r = 'play/getdata' }
+   * @param {CancelToken} [token]
+   * @returns {AxiosPromise<{ data: ISongInfo }>}
+   */
+  getSongInfo({ hash }: { hash: string, r?: string },
+    token?: CancelToken): AxiosPromise<{ data: ISongInfo }> {
+    return service.get('/bproxy/yy/index.php?r=play/getdata', {
+      params: { hash },
       cancelToken: token
     });
   }

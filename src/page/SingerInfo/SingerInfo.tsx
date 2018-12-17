@@ -2,15 +2,16 @@
  * @Author: qiao 
  * @Date: 2018-11-29 18:34:52 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-09 19:14:17
+ * @Last Modified time: 2018-12-13 17:23:55
  * 歌手信息页面
  */
 import Api from '@/api';
 import { ISong } from '@/api/api';
 import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
 import Drawer from '@/components/Drawer/Drawer';
-import SongItem from '@/components/SongItem/SongItem';
-import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
+import SongList from '@/components/SongList/SongList';
+// import SongItem from '@/components/SongItem/SongItem';
+import { ISetHeaderAction, setHeader } from '@/redux/actions';
 import { IHeaderState } from '@/redux/reducers/header';
 import Axios from 'axios';
 import React from 'react';
@@ -121,11 +122,12 @@ class SingerInfo extends React.PureComponent<IProps> {
         <div styleName="song-info__bg" style={{ backgroundImage: `url(${bg})`}}/>
         <Drawer text={bgdesc}/>
         <div styleName="div-line"/>
-        {
+        <SongList songs={songs}/>
+        {/* {
           songs.map((song, index) => (
-            <SongItem key={index} song={song}/>
+            <SongItem key={song.hash + index + ''} song={song}/>
           ))
-        }
+        } */}
       </div>
     );
   }

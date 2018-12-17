@@ -14,7 +14,8 @@
     "member-access": false,
     "no-debugger": false,
     "no-console": false,
-    "no-shadowed-variable": false
+    "no-shadowed-variable": false,
+    "no-unused-expression": false
   },
   "jsRules": {
     "object-literal-sort-keys": false

@@ -2,24 +2,22 @@
  * @Author: qiao 
  * @Date: 2018-11-25 21:17:38 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-09 18:51:31
+ * @Last Modified time: 2018-12-13 16:08:54
  * 排行榜详情
  */
 import Api from '@/api';
 import { ISong } from '@/api/api';
 import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
-// import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
 import SongItem from '@/components/SongItem/SongItem';
-import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
+import { getSong, ISetHeaderAction, setHeader } from '@/redux/actions';
 import { IHeaderState } from '@/redux/reducers/header';
-import axios from 'axios';
+import axios, { CancelToken } from 'axios';
 import React from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+// import { Dispatch } from 'redux';
 import { IPageComponentProps, pageWrapperGenerator } from '..';
 import './rankInfo.scss';
-
-// TODO: 需要做监听滚动，headerbar逐渐变得不透明的动效
 
 // 需要路由传入的state
 export interface IRouteState {
@@ -58,9 +56,9 @@ class RankInfo extends React.PureComponent<IProps> {
   }
 
   async setData() {
-    const { match: { params }, setHeader, location: { state }, updateData, updateError } = this.props;
+    const { match: { params }, onSetHeader, location: { state }, updateData, updateError } = this.props;
     try {  
-      setHeader({
+      onSetHeader({
         isShow: true,
         title: state.title,
         bg: 'rgba(43, 162, 251, 0)'
@@ -87,7 +85,7 @@ class RankInfo extends React.PureComponent<IProps> {
       this.frameId = window.requestAnimationFrame(() => {
         // https://javascript.info/size-and-scroll
         // console.log(target.scrollTop);
-        const { setHeader } = this.props;
+        const { onSetHeader } = this.props;
         const { scrollTop } = target;
         let opacity;
         if (scrollTop <= 200) {
@@ -95,7 +93,7 @@ class RankInfo extends React.PureComponent<IProps> {
         } else {
           opacity = 1;
         }
-        setHeader({
+        onSetHeader({
           bg: `rgba(43, 162, 251, ${opacity})`
         });
         this.frameId = null;
@@ -118,6 +116,11 @@ class RankInfo extends React.PureComponent<IProps> {
 
   componentWillUnmount() {
     this.source.cancel('cancel by unmount');
+  }
+
+  playMusic = (song: ISong) => {
+    const { onGetSong } = this.props;
+    onGetSong(song.hash, this.source.token);
   }
 
   render() {
@@ -148,7 +151,7 @@ class RankInfo extends React.PureComponent<IProps> {
         <div styleName="song-list">
           {
             songs.map((song, i) => (
-                <SongItem song={song} key={song.hash} rank={i}/>
+                <SongItem song={song} key={song.hash} rank={i} onClick={this.playMusic.bind(this, song)}/>
             ))  
           }
         </div>
@@ -157,10 +160,14 @@ class RankInfo extends React.PureComponent<IProps> {
   }
 }
 
-function mapDispatchToProps(dispatch: Dispatch<ISetHeaderAction>) {
+// NOTE: ThunkDispatch的声明文件貌似对ThunkAction的传入支持不太好
+function mapDispatchToProps(dispatch: ThunkDispatch<any, any, ISetHeaderAction>) {
   return {
-    setHeader(payload: IHeaderState) {
+    onSetHeader(payload: IHeaderState) {
       dispatch(setHeader(payload));
+    },
+    onGetSong(songHash: string, token: CancelToken) {
+      dispatch(getSong(songHash, token))
     }
   }
 }

@@ -2,12 +2,13 @@
  * @Author: qiao 
  * @Date: 2018-11-26 17:01:41 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-26 18:42:44
+ * @Last Modified time: 2018-12-12 09:21:00
  * headerbar状态
  */
-import { ISetHeaderAction } from '@/redux/actions/header';
+// import { ISetHeaderAction } from '@/redux/actions/header';
 import * as constants from '@/redux/constants'
 import { createReducer } from '@/utils';
+import { IAction } from '../actions';
 
 export interface IHeaderState {
   isShow?: boolean;
@@ -22,7 +23,8 @@ export const preHeaderState: IHeaderState = {
 };
 
 const handlers = {
-  [constants.SET_HEADER](state: IHeaderState, action: ISetHeaderAction): IHeaderState {
+  [constants.SET_HEADER](state: IHeaderState, 
+    action: IAction<constants.SET_HEADER, IHeaderState>): IHeaderState {
     const { payload } = action; 
     return {
       ...state,

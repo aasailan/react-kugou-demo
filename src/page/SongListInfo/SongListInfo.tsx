@@ -2,14 +2,15 @@
  * @Author: qiao 
  * @Date: 2018-11-27 18:46:50 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-09 19:32:45
+ * @Last Modified time: 2018-12-13 17:35:07
  * 歌单详情页
  */
 import Api from '@/api';
 import { ISong } from '@/api/api';
 import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
 import Drawer from '@/components/Drawer/Drawer';
-import SongItem from '@/components/SongItem/SongItem';
+import SongList from '@/components/SongList/SongList';
+// import SongItem from '@/components/SongItem/SongItem';
 import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
 import { IHeaderState } from '@/redux/reducers/header';
 import Axios from 'axios';
@@ -95,7 +96,7 @@ class SongListInfo extends React.PureComponent<IProps> {
   }
   
   render() {
-
+    console.log(this.constructor.name);
     const { data, children } = this.props;
     if (!data) {
       const childrenWithProps = React.Children.map(children, child => 
@@ -114,11 +115,12 @@ class SongListInfo extends React.PureComponent<IProps> {
         <div styleName="song-info__bg" style={{ backgroundImage: `url(${bg})`}}/>
         <Drawer text={bgdesc}/>
         <div styleName="div-line"/>
-        {
+        <SongList songs={songs}/>
+        {/* {
           songs.map(song => (
             <SongItem key={song.hash} song={song}/>
           ))
-        }
+        } */}
       </div>
     );
   }

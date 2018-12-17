@@ -7,17 +7,19 @@
  */
 import { ISong } from '@/api/api';
 import downloadPng from '@/assets/imgs/download_icon.png';
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 import './songItem.scss';
 
 interface IProps {
   song: ISong;
   rank?: number;
+  onClick?: MouseEventHandler
+  // [key: string]: any;
 }
 
-export default function SongItem({ song, rank }: IProps) {
+export default function SongItem({ song, rank, onClick }: IProps) {
   return (
-    <div styleName="song-item">
+    <div styleName="song-item" onClick={onClick}>
       { rank !== undefined ? <span styleName="song-item__index">{rank}</span> : null} 
       <img src={downloadPng} styleName="song-item__download-icon"/>
       <div styleName={ rank !== undefined ? 'song-item__title song-item__title--has-rank' 

@@ -6,7 +6,9 @@ import store from '@/redux/store';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
-import HeaderBar from './components/HeaderBar/HeaderBar';
+import DetailPlayer from './components/DetailPlayer/DetailPlayer';
+import HeaderBarContainer from './components/HeaderBar/HeaderBar';
+import Player from './components/Player/Player';
 import { routes, routeWithSubRoutes } from './router';
 
 const theme = createMuiTheme({
@@ -27,10 +29,12 @@ class App extends React.Component {
           <MuiThemeProvider theme={theme}>
             <div className="app">
               <Header/>
-              <HeaderBar />
+              <HeaderBarContainer />
               <Switch>
                 { routes.map((route, i) => routeWithSubRoutes(route, i)) }
               </Switch>
+              <Player/>
+              <DetailPlayer/>
             </div>
           </MuiThemeProvider>
         </Router>  

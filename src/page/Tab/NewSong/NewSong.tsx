@@ -2,13 +2,13 @@
  * @Author: qiao 
  * @Date: 2018-11-25 09:56:23 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-07 10:05:53
+ * @Last Modified time: 2018-12-13 18:39:37
  * 新歌列表
  */
 import Api from '@/api';
 import { IBanner, ISong } from '@/api/api';
+import SongList from '@/components/SongList/SongList';
 // import { NetworkError } from '@/api/networkError';
-import SongItem from '@/components/SongItem/SongItem';
 import { IPageComponentProps, pageWrapperGenerator } from '@/page';
 import React from 'react';
 import SwipeableViews from 'react-swipeable-views';
@@ -51,6 +51,8 @@ class NewSong extends React.PureComponent<IProps> {
   }
 
   render() {
+    console.log(this.constructor.name);
+    
     const { data, children } = this.props;
 
     if (!data) {
@@ -71,9 +73,7 @@ class NewSong extends React.PureComponent<IProps> {
             ))
           }
         </AutoPlaySwipeableViews>
-        {
-          songs.map(song => <SongItem song={song} key={song.hash}/>)
-        }
+        <SongList songs={songs}/>
       </div>
     );
   }
