@@ -38,3 +38,9 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+:global(input) {
+  background: none;
+  outline: none;
+  border: 0px;
+}

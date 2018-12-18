@@ -100,3 +100,16 @@ export interface ISongInfo {
   author_name: string; // 歌曲作者名
   lyrics: string; // 歌词
 }
+
+// 热门搜索接口
+export interface IHotSearch {
+  jumpurl: string;
+  keyword: string;
+  sort: number;
+}
+
+// 搜索结果
+// export interface ISearch {
+//   filename: string;
+//   hash: string;
+// }

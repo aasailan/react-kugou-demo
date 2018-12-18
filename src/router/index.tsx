@@ -41,7 +41,7 @@ export const searchRoute: IRoute = {
   name: 'Search',
   exact: true,
   path: '/tab/search',
-  component: asyncComponent(() => import('@/page/Tab/Search/Search'), 'Search')
+  component: asyncComponent(() => import('@/page/Tab/Search/Search'), 'SearchPage')
 };
 
 export const rankInfoRoute: IRoute = {

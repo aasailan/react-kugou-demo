@@ -2,12 +2,11 @@
  * @Author: qiao 
  * @Date: 2018-11-25 12:29:37 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-12 13:59:42
+ * @Last Modified time: 2018-12-18 15:04:17
  * api
  */
 import axios, { AxiosPromise, CancelToken } from 'axios';
-import { INewSong, IRankInfo, IRanks, ISingerInfo, 
-  ISingerList, ISongInfo, ISongListInfo, ISongs } from './api';
+import { IHotSearch, INewSong, IRankInfo, IRanks, ISingerInfo, ISingerList, ISong, ISongInfo, ISongListInfo, ISongs } from './api';
 import { NetworkError } from './networkError';
 
 // TODO: 需要区分生产和开发环境
@@ -96,6 +95,23 @@ const Api = {
     token?: CancelToken): AxiosPromise<{ data: ISongInfo }> {
     return service.get('/bproxy/yy/index.php?r=play/getdata', {
       params: { hash },
+      cancelToken: token
+    });
+  },
+
+  /**
+   * @description 获取热门搜索
+   * @param {CancelToken} [token]
+   * @returns {AxiosPromise<IHotSearch>}
+   */
+  getHotSearch(token?: CancelToken): AxiosPromise<{ data: { info: IHotSearch[] } }> {
+    return service.get('/aproxy/api/v3/search/hot?format=json&plat=0&count=30', {
+      cancelToken: token
+    });
+  },
+
+  searchSong(keyword: string, token?: CancelToken): AxiosPromise<{ data: { info: ISong[], total: number }}> {
+    return service.get(`/aproxy/api/v3/search/song?format=json&keyword=${keyword}&page=1&pagesize=30&showtype=1`, {
       cancelToken: token
     });
   }

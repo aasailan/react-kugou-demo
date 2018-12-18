@@ -46,7 +46,7 @@ class SongList extends React.PureComponent<IProps> {
       <>
         {
           songs.map((song, index) => (
-            <SongItem song={song} key={song.hash} onClick={this.playMusic.bind(this, song, index)}/>
+            <SongItem title={song.filename} key={song.hash} onClick={this.playMusic.bind(this, song, index)}/>
           ))
         }
       </>

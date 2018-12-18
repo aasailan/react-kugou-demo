@@ -2,7 +2,7 @@
  * @Author: qiao 
  * @Date: 2018-12-04 15:33:55 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-09 15:49:15
+ * @Last Modified time: 2018-12-18 15:28:18
  * TODO: 改成使用HOC的方式
  */
 import { NetworkError } from '@/api/networkError';
@@ -99,12 +99,23 @@ export function pageWrapperGenerator(component: React.ComponentClass,
       });
     }
 
-    updateData = (data: any) => {
-      const { location: { pathname } } = this.props;
-      localStorage.setItem(pathname, JSON.stringify(data));
+    updateData = (nextData: any) => {
+      const preData = this.state.data;
       this.setState({
-        data
+        data: {
+          ...preData,
+          ...nextData
+        }
       });
+    }
+
+    componentWillUnmount() {
+      const { location: { pathname } } = this.props;
+      try {
+        localStorage.setItem(pathname, JSON.stringify(this.state.data));
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     render() {

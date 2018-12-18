@@ -151,7 +151,7 @@ class RankInfo extends React.PureComponent<IProps> {
         <div styleName="song-list">
           {
             songs.map((song, i) => (
-                <SongItem song={song} key={song.hash} rank={i} onClick={this.playMusic.bind(this, song)}/>
+                <SongItem title={song.filename} key={song.hash} rank={i} onClick={this.playMusic.bind(this, song)}/>
             ))  
           }
         </div>
@@ -169,7 +169,7 @@ function mapDispatchToProps(dispatch: ThunkDispatch<any, any, ISetHeaderAction>)
     onGetSong(songHash: string, token: CancelToken) {
       dispatch(getSong(songHash, token))
     }
-  }
+  };
 }
 
 export const RankInfoPage = pageWrapperGenerator(connect(null, mapDispatchToProps)(RankInfo), CustomLoader);
