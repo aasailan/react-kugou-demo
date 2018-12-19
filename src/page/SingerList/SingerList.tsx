@@ -2,13 +2,13 @@
  * @Author: qiao 
  * @Date: 2018-11-29 11:07:48 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-29 18:58:25
+ * @Last Modified time: 2018-12-04 14:11:24
  * 歌手列表
  */
 import Api from '@/api';
 import { ISinger } from '@/api/api';
 import CardItem from '@/components/CardItem/CardItem';
-import Loading from '@/components/Loading/Loading';
+import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
 import { IRouteState as ISingerInfoRouteState } from '@/page/SingerInfo/SingerInfo';
 import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
 import { IHeaderState } from '@/redux/reducers/header';
@@ -16,9 +16,9 @@ import Axios from 'axios';
 import { LocationDescriptorObject } from 'history';
 import React from 'react';
 import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Dispatch } from 'redux';
+import { IPageComponentProps, pageWrapperGenerator } from '..';
 import './singerList.scss';
 
 
@@ -30,39 +30,39 @@ export interface IRouteParams {
   typeId: string;
 }
 
-
 interface IProps extends ReturnType<typeof mapDispatchToProps>, 
-  RouteComponentProps<IRouteParams, any, IRouteState> {
+  IPageComponentProps<IData, IRouteParams, any, IRouteState> {
 }
 
-interface IState {
-  singers: ISinger[] | null;
+interface IData {
+  singers: ISinger[];
 }
 
-class SingerList extends React.PureComponent<IProps, IState> {
-
-  state: IState = {
-    singers: null
-  }
+class SingerList extends React.PureComponent<IProps> {
 
   private source = Axios.CancelToken.source();
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.setData();
+  }
+
+  async setData() {
+    const { setHeader, location: { state: { title }}, 
+      match: { params: { typeId } }, updateData, updateError } = this.props;
     try {
-      const { setHeader, location: { state: { title }}, 
-      match: { params: { typeId } } } = this.props;
+      
       setHeader({
         isShow: true,
         title,
         bg: 'rgb(44, 162, 249)'
       });
 
-    const { data: { singers: { list : { info } } } } = await Api.getSingerList({ singerType: typeId }, this.source.token);
-    this.setState({
-      singers: info
-    });
-  } catch (e) {
-      console.error(e.message || e);
+      const { data: { singers: { list : { info } } } } = await Api.getSingerList({ singerType: typeId }, this.source.token);
+      updateData({
+        singers: info
+      });
+    } catch (e) {
+      updateError(e);
     } 
   }
 
@@ -72,15 +72,19 @@ class SingerList extends React.PureComponent<IProps, IState> {
 
   render() {
 
-    const { singers } = this.state;
-    if (!singers) {
+    const { data, children } = this.props;
+    if (!data) {
+      const childrenWithProps = React.Children.map(children, child => 
+        React.cloneElement(child as any, { className: 'page-loading' })
+      );
       return (
         <div className="page">
-          <Loading/>
+          {childrenWithProps}
         </div>
       );
     }
 
+    const { singers } = data;
     return (
       <div className="page">
         <div styleName="singer-list">
@@ -91,7 +95,7 @@ class SingerList extends React.PureComponent<IProps, IState> {
                   pathname: `/singer/info/${singer.singerid}`,
                   state: { title: singer.singername }
                 } as LocationDescriptorObject<ISingerInfoRouteState>
-              }>
+              } key={singer.singerid}>
                 <CardItem key={singer.singerid} 
                   imgUrl={singer.imgurl.replace('{size}', '400')} 
                   name={singer.singername}
@@ -113,4 +117,4 @@ function mapDispatchToProps(dispatch: Dispatch<ISetHeaderAction>) {
   }
 }
 
-export const SingerListContainer = connect(null, mapDispatchToProps)(SingerList);
+export const SingerListPage = pageWrapperGenerator(connect(null, mapDispatchToProps)(SingerList), CustomLoader);

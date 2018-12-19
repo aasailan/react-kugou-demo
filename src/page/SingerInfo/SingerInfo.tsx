@@ -2,20 +2,22 @@
  * @Author: qiao 
  * @Date: 2018-11-29 18:34:52 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-29 19:23:47
+ * @Last Modified time: 2018-12-13 17:23:55
  * 歌手信息页面
  */
 import Api from '@/api';
 import { ISong } from '@/api/api';
-import Loading from '@/components/Loading/Loading';
-import SongItem from '@/components/SongItem/SongItem';
-import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
+import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
+import Drawer from '@/components/Drawer/Drawer';
+import SongList from '@/components/SongList/SongList';
+// import SongItem from '@/components/SongItem/SongItem';
+import { ISetHeaderAction, setHeader } from '@/redux/actions';
 import { IHeaderState } from '@/redux/reducers/header';
 import Axios from 'axios';
 import React from 'react';
 import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
 import { Dispatch } from 'redux';
+import { IPageComponentProps, pageWrapperGenerator } from '..';
 import './singerInfo.scss';
 
 export interface IRouteState {
@@ -26,79 +28,106 @@ interface IRouteParams {
   singerId: string;
 }
 
-interface IState {
-  bg: string | null;
-  bgdesc: string | null;
-  songs: ISong[] | null;
+interface IData {
+  bg: string;
+  bgdesc: string;
+  songs: ISong[];
 }
 
+// interface IProps extends ReturnType<typeof mapDispatchToProps>, 
+//   RouteComponentProps<IRouteParams, any, IRouteState> {
+// }
 interface IProps extends ReturnType<typeof mapDispatchToProps>, 
-  RouteComponentProps<IRouteParams, any, IRouteState> {
-}
+  IPageComponentProps<IData, IRouteParams, any, IRouteState> {}
 
-class SingerInfo extends React.PureComponent<IProps, IState> {
+class SingerInfo extends React.PureComponent<IProps> {
 
-  state: IState = {
-    bg: null,
-    bgdesc: null,
-    songs: null
-  };
+  private frameId: number | null = null;
   
   private source = Axios.CancelToken.source();
 
-  async componentDidMount() {
-    const { match: { params: { singerId } }, setHeader, location: { state } } = this.props;
-    // 需要从路由中获取title参数
-    setHeader({
-      isShow: true,
-      title: state.title,
-      bg: 'rgba(43, 162, 251, 0)'
-    });
+  componentDidMount() {
+    this.setData();
+  }
 
+  async setData() {
+    const { match: { params: { singerId } }, setHeader, location: { state }, updateData, updateError } = this.props;
     try {
+      setHeader({
+        isShow: true,
+        title: state.title,
+        bg: 'rgba(43, 162, 251, 0)'
+      });
+
       const { data: { 
         info: { imgurl, intro }, 
         songs: { list }
       }} = await Api.getSingerInfo({ singerId }, this.source.token);
-      console.log('getsingerInfo');
       const bg = imgurl.replace('{size}', '400');
       const bgdesc = intro;
       const songs = list;
-      this.setState({
+      updateData({
         bg,
         bgdesc,
         songs
       });
+
     } catch (e) {
-      console.error(e.message || e);
+      updateError(e);
     }
   }
 
   componentWillUnmount() {
     this.source.cancel('cancel by unmount');
   }
+
+  setHeaderBarStyle: React.UIEventHandler<HTMLDivElement> = (event) => {
+    const target = event.currentTarget;
+    if (this.frameId === null) {
+      this.frameId = window.requestAnimationFrame(() => {
+        const { setHeader } = this.props;
+        const { scrollTop } = target;
+        let opacity;
+        if (scrollTop <= 200) {
+          opacity = scrollTop / 200;
+        } else {
+          opacity = 1;
+        }
+        setHeader({
+          bg: `rgba(43, 162, 251, ${opacity})`
+        });
+        this.frameId = null;
+      });
+    };
+  }
   
   render() {
 
-    const { bg, songs, bgdesc} = this.state;
-    if (!bg || !songs || !bgdesc) {
+    const { data, children } = this.props;
+    if (!data) {
+      const childrenWithProps = React.Children.map(children, child => 
+        React.cloneElement(child as any, { className: 'page-loading' })
+      );
       return (
         <div className="page">
-          <Loading/>
+          {childrenWithProps}
         </div>
       );
     }
 
+    const { songs, bg, bgdesc } = data;
+
     return (
-      <div className="page">
+      <div className="page" onScroll={this.setHeaderBarStyle}>
         <div styleName="song-info__bg" style={{ backgroundImage: `url(${bg})`}}/>
-        <div styleName="song-info__desc">{ /* TODO: 需要一个上下收缩的动效 */ } {bgdesc}</div>
+        <Drawer text={bgdesc}/>
         <div styleName="div-line"/>
-        {
+        <SongList songs={songs}/>
+        {/* {
           songs.map((song, index) => (
-            <SongItem key={index} song={song}/>
+            <SongItem key={song.hash + index + ''} song={song}/>
           ))
-        }
+        } */}
       </div>
     );
   }
@@ -112,4 +141,4 @@ function mapDispatchToProps(dispatch: Dispatch<ISetHeaderAction>) {
   }
 }
 
-export const SingerInfoContainer = connect(null, mapDispatchToProps)(SingerInfo);
+export const SingerInfoPage = pageWrapperGenerator(connect(null, mapDispatchToProps)(SingerInfo), CustomLoader) ;

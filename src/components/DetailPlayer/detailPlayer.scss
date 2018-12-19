@@ -1,0 +1,110 @@
+.detail-player {
+  text-align: center;
+  z-index: 3;
+  transition: transform ease-in-out 0.5s;
+  
+  &--open {
+    transform: translateY(0)
+  }
+
+  &--close {
+    transform: translateY(100%)
+  }
+
+  &__header {
+    top: 0px;
+  }
+
+  &__bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    // background-image: url("http://singerimg.kugou.com/uploadpic/softhead/400/20170605/20170605190207484.jpg");
+    filter: blur(5px);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+
+  &__container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    text-align: center;
+    background-color: rgba(0,0,0,.5);
+  }
+
+  &__img {
+    width: 375px;
+    height: 375px;
+    margin-top: 25%;
+    // margin-bottom: 60px;
+  }
+
+  &__lrc-window {
+    height: 174px;
+    width: 90%;
+    margin: auto;
+    overflow: hidden;
+    margin-bottom: 40px;
+  }
+
+  &__lrc-box {
+    color: #fff;
+    transition: transform linear 0.2s;
+  }
+}
+
+.progress {
+  margin: 0px 60px;
+  overflow: hidden;
+  font-size: 24px;
+  height: 30px;
+
+  &__time {
+    color: #fff;
+    &--start {
+      float: left;
+    }
+    &--end {
+      float: right;
+    }
+  }
+  &__slider {
+    max-width: 460px;
+    margin: auto;
+    margin-top: 18px;
+  }
+}
+
+.play-controll {
+  overflow: hidden;
+  padding: 0 20%;
+
+  span {
+    display: block;
+    float: left;
+    width: 33.3%;
+    height: 200px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  &__pre-song {
+    background-image: url('../../assets/imgs/play_prev.png');
+    background-size: 60%;
+  }
+  &__pause {
+    background-size: 80%;
+    background-image: url('../../assets/imgs/play_pause.png');
+  }
+  &__play {
+    background-size: 80%;
+    background-image: url('../../assets/imgs/play_play.png');
+  }
+  &__next-song {
+    background-size: 60%;
+    background-image: url('../../assets/imgs/play_next.png');
+  }
+}

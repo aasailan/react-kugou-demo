@@ -2,12 +2,12 @@
  * @Author: qiao 
  * @Date: 2018-11-25 12:29:37 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-29 19:24:15
+ * @Last Modified time: 2018-12-18 15:04:17
  * api
  */
 import axios, { AxiosPromise, CancelToken } from 'axios';
-import { INewSong, IRankInfo, IRanks, ISingerInfo, 
-  ISingerList, ISongListInfo, ISongs } from './api';
+import { IHotSearch, INewSong, IRankInfo, IRanks, ISingerInfo, ISingerList, ISong, ISongInfo, ISongListInfo, ISongs } from './api';
+import { NetworkError } from './networkError';
 
 // TODO: 需要区分生产和开发环境
 const API_HOST = 'http://localhost:3000';
@@ -24,14 +24,18 @@ export const service = axios.create({
 service.interceptors.request.use((config) => {
   return config;
 }, error => {
-  return new Error(error);
+  return new NetworkError(error);
 });
 
 service.interceptors.response.use((response) => {
+  // 
   return response;
 }, error => {
   // NOTE: 如果请求被取消，则会运行这个地方
-  throw new Error(error);
+  if (axios.isCancel(error)) {
+    throw new NetworkError(error, NetworkError.ERROR_TYPE.USER_CANCEL);
+  }
+  throw new NetworkError(error);
 });
 
 const Api = {
@@ -77,6 +81,37 @@ const Api = {
     token?: CancelToken): AxiosPromise<ISingerInfo> {
     return service.get(`/proxy/singer/info/${singerId}`, {
       params: { json },
+      cancelToken: token
+    });
+  },
+
+  /**
+   * @description 获取歌曲信息
+   * @param {{ hash: string, r: string }} { hash, r = 'play/getdata' }
+   * @param {CancelToken} [token]
+   * @returns {AxiosPromise<{ data: ISongInfo }>}
+   */
+  getSongInfo({ hash }: { hash: string, r?: string },
+    token?: CancelToken): AxiosPromise<{ data: ISongInfo }> {
+    return service.get('/bproxy/yy/index.php?r=play/getdata', {
+      params: { hash },
+      cancelToken: token
+    });
+  },
+
+  /**
+   * @description 获取热门搜索
+   * @param {CancelToken} [token]
+   * @returns {AxiosPromise<IHotSearch>}
+   */
+  getHotSearch(token?: CancelToken): AxiosPromise<{ data: { info: IHotSearch[] } }> {
+    return service.get('/aproxy/api/v3/search/hot?format=json&plat=0&count=30', {
+      cancelToken: token
+    });
+  },
+
+  searchSong(keyword: string, token?: CancelToken): AxiosPromise<{ data: { info: ISong[], total: number }}> {
+    return service.get(`/aproxy/api/v3/search/song?format=json&keyword=${keyword}&page=1&pagesize=30&showtype=1`, {
       cancelToken: token
     });
   }

@@ -2,87 +2,106 @@
  * @Author: qiao 
  * @Date: 2018-11-25 21:17:38 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-11-28 19:00:56
+ * @Last Modified time: 2018-12-13 16:08:54
  * 排行榜详情
  */
 import Api from '@/api';
 import { ISong } from '@/api/api';
-import Loading from '@/components/Loading/Loading';
+import { CustomLoader } from '@/components/ContentLoader/ContentLoader';
 import SongItem from '@/components/SongItem/SongItem';
-import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
+import { getSong, ISetHeaderAction, setHeader } from '@/redux/actions';
 import { IHeaderState } from '@/redux/reducers/header';
-import axios from 'axios';
+import axios, { CancelToken } from 'axios';
 import React from 'react';
 import { connect } from 'react-redux';
-import { RouteComponentProps } from 'react-router';
-import { Dispatch } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
+// import { Dispatch } from 'redux';
+import { IPageComponentProps, pageWrapperGenerator } from '..';
 import './rankInfo.scss';
-
-// TODO: 需要做监听滚动，headerbar逐渐变得不透明的动效
 
 // 需要路由传入的state
 export interface IRouteState {
   title: string;
 }
 
+// NOTE: 路由参数的value都会变成string，就算传入的时候是数字
+export interface IRouteParams {
+  id: string;
+}
+
+interface IData {
+  bg: string;
+  updateTime: string;
+  songs: ISong[];
+}
+
 interface IProps extends ReturnType<typeof mapDispatchToProps>, 
-  RouteComponentProps<any, any, IRouteState> {
-
+  IPageComponentProps<IData, IRouteParams, any, IRouteState> {
 }
 
-interface IState {
-  bg: string | null;
-  updateTime: string | null;
-  songs: ISong[] | null;
-}
+class RankInfo extends React.PureComponent<IProps> {
 
-class RankInfo extends React.PureComponent<IProps, IState> {
+  private source = axios.CancelToken.source();
 
-  // private isMount = false;
-  state: IState = {
-    bg: null,
-    updateTime: null,
-    songs: null
-  };
+  private frameId: number | null = null;
 
-   // TODO: 需要验证 是否可以复用？
-   private source = axios.CancelToken.source();
+  constructor(props: IProps) {
+    super(props);
+  }
 
-  // changeHeaderBar = () => {
-  //   const { setHeader } = this.props;
-  //   setHeader({
-  //     title: '酷狗飙升榜',
-  //     bg: 'rgba(43, 162, 251, 1)'
-  //   });
-  // }
+  componentDidMount() {
+    this.setData();
+    // 取消请求测试
+    // this.source.cancel('cancel by unmount');
+  }
 
-  async componentDidMount() {
-    // this.isMount = true;
-    const { match: { params }, setHeader, location: { state } } = this.props;
-    // 需要从路由中获取title参数
-    setHeader({
-      isShow: true,
-      title: state.title,
-      bg: 'rgba(43, 162, 251, 0)'
-    });
-    
-    try {
-      const { data: { info: { banner7url }, songs: { list }} } = await Api.getRankInfo({ rankid: params.id }, this.source.token);
+  async setData() {
+    const { match: { params }, onSetHeader, location: { state }, updateData, updateError } = this.props;
+    try {  
+      onSetHeader({
+        isShow: true,
+        title: state.title,
+        bg: 'rgba(43, 162, 251, 0)'
+      });
+      const { data: { info: { banner7url }, songs: { list }} } = await Api.getRankInfo({ rankid: params.id as any }, this.source.token);
       const bg = banner7url.replace('{size}', '400');
-      const songs = list;
       const updateTime = this.getToday(new Date());
-      this.setState({
+      // throw new Error('test');
+      updateData({
+        songs: list,
         bg,
-        songs,
-        updateTime 
+        updateTime
       });
     } catch (e) {
-      console.error(e.message || e);
+      console.log('catch error');
+      updateError(e);
     }
   }
 
+  // 泛型传入currentTarget类型
+  setHeaderBarStyle: React.UIEventHandler<HTMLDivElement> = (event) => {
+    const target = event.currentTarget;
+    if (this.frameId === null) {
+      this.frameId = window.requestAnimationFrame(() => {
+        // https://javascript.info/size-and-scroll
+        // console.log(target.scrollTop);
+        const { onSetHeader } = this.props;
+        const { scrollTop } = target;
+        let opacity;
+        if (scrollTop <= 200) {
+          opacity = scrollTop / 200;
+        } else {
+          opacity = 1;
+        }
+        onSetHeader({
+          bg: `rgba(43, 162, 251, ${opacity})`
+        });
+        this.frameId = null;
+      });
+    };
+  }
+
   getToday(time: Date){
-    // const time = new Date()
     const year = time.getFullYear()
     let month: number | string = time.getMonth() + 1
     let date: number | string = time.getDate()
@@ -96,32 +115,44 @@ class RankInfo extends React.PureComponent<IProps, IState> {
   }
 
   componentWillUnmount() {
-    // this.isMount = false;
     this.source.cancel('cancel by unmount');
   }
 
+  playMusic = (song: ISong) => {
+    const { onGetSong } = this.props;
+    onGetSong(song.hash, this.source.token);
+  }
+
   render() {
-    const { bg, songs, updateTime } = this.state;
-    if (!bg || !songs) {
+
+    const { data, children } = this.props;
+    if (!data) {
+      // NOTE: how to pass data to props.children
+      // https://stackoverflow.com/questions/32370994/how-to-pass-props-to-this-props-children
+      // https://frontarm.com/articles/passing-data-props-children/
+      // https://react.docschina.org/docs/react-api.html#reactchildren
+      const childrenWithProps = React.Children.map(children, child => 
+        React.cloneElement(child as any, { className: 'page-loading' })
+      );
       return (
         <div className="page">
-          <Loading/>
+          {childrenWithProps}
         </div>
       );
     }
 
+    const { songs, bg, updateTime } = data;
+
     return (
-      <div className="page">
+      <div className="page" onScroll={this.setHeaderBarStyle}>
         <div styleName="rank-bg" style={{ backgroundImage: `url(${bg})`  }}>
           <div styleName="rank-bg__title">上次更新时间：{updateTime}</div>
         </div>
         <div styleName="song-list">
           {
-            songs.map((song, i) => {
-              return (
-                <SongItem song={song} key={song.hash} rank={i}/>
-              )
-            })  
+            songs.map((song, i) => (
+                <SongItem title={song.filename} key={song.hash} rank={i} onClick={this.playMusic.bind(this, song)}/>
+            ))  
           }
         </div>
       </div>
@@ -129,16 +160,16 @@ class RankInfo extends React.PureComponent<IProps, IState> {
   }
 }
 
-// function mapStateToProps(state: IStoreState) {
-
-// }
-
-function mapDispatchToProps(dispatch: Dispatch<ISetHeaderAction>) {
+// NOTE: ThunkDispatch的声明文件貌似对ThunkAction的传入支持不太好
+function mapDispatchToProps(dispatch: ThunkDispatch<any, any, ISetHeaderAction>) {
   return {
-    setHeader(payload: IHeaderState) {
+    onSetHeader(payload: IHeaderState) {
       dispatch(setHeader(payload));
+    },
+    onGetSong(songHash: string, token: CancelToken) {
+      dispatch(getSong(songHash, token))
     }
-  }
+  };
 }
 
-export const RankInfoContainer = connect(null, mapDispatchToProps)(RankInfo);
+export const RankInfoPage = pageWrapperGenerator(connect(null, mapDispatchToProps)(RankInfo), CustomLoader);

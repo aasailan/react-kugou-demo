@@ -1,0 +1,31 @@
+.drawer {
+  padding: 20px 70px 20px 20px;
+  position: relative;
+
+  &__icon {
+    position: absolute;
+    position: absolute;
+    top: 24px;
+    right: 16px;
+    width: 40px;
+    transition: transform linear 0.5s;
+    &--open {
+      transform: rotate(0deg);
+    }
+    &--close {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__text {
+    transition: max-height linear 0.5s;
+    overflow: hidden;
+    &--close {
+      max-height: 44px;
+    }
+
+    &--open {
+      max-height: 2000px;
+    }
+  }
+}

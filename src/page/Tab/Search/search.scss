@@ -1,0 +1,47 @@
+@import '@/assets/css/variable.scss';
+
+.search-box {
+  &__bg {
+    background-color: #fbfbfb;
+    padding: 20px;
+  }
+  &__btn {
+    float: right;
+    color: #fff;
+  }
+  &__icon {
+    width: 7%;
+    height: 100%;
+    background-image: url(http://m.kugou.com/v3/static/images/index/search_icon.png);
+    background-position: 50%;
+    background-size: 100%;
+    // display: inline-block;
+    float: left;
+  }
+  &__input {
+    background-color: #fff;
+    height: 100%;
+    border: 0px;
+    width: 93%;
+  }
+  &__input-wrapper {
+    border: 1px solid #e5e5e5;
+    margin-right: 154px;
+    height: 64px;
+    border-radius: 10px;
+    padding-left: 12px;
+  }
+}
+
+.search-count {
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 24px;
+  padding: 20px;
+  background: #e1e1e1;
+}
+
+.search-title {
+  color: $primaryColor;
+  font-size: 24px;
+  padding-left: 30px;
+}

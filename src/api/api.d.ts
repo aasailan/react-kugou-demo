@@ -89,3 +89,27 @@ export interface ISingerInfo {
   info: { imgurl: string; intro: string },
   songs: { list: ISong[] }
 } 
+
+
+// 歌曲信息接口
+export interface ISongInfo {
+  play_url: string; // 歌曲文件url
+  img: string; // 歌曲图片
+  audio_name: string; // 歌曲名称
+  timelength: number; // 歌曲时间
+  author_name: string; // 歌曲作者名
+  lyrics: string; // 歌词
+}
+
+// 热门搜索接口
+export interface IHotSearch {
+  jumpurl: string;
+  keyword: string;
+  sort: number;
+}
+
+// 搜索结果
+// export interface ISearch {
+//   filename: string;
+//   hash: string;
+// }

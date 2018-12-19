@@ -11,6 +11,7 @@
   left: 0px;
   bottom: 0px;
   right: 0px;
+  overflow: hidden;
 }
 
 :global(.page) {
@@ -25,4 +26,21 @@
 :global(a) {
   text-decoration:none; 
   color:#333; 
+}
+
+:global(.page-loader) {
+  margin-top: 160px;
+}
+
+:global(.page-loading) {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+:global(input) {
+  background: none;
+  outline: none;
+  border: 0px;
 }

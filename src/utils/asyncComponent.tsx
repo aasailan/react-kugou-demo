@@ -12,7 +12,7 @@ interface IState {
 }
 
 /**
- * @description HOC 异步加载组件
+ * @description HOC 异步加载组件 NOTE: 需要给改异步组件也加上loading页和加载错误页面
  * @export
  * @param {() => Promise<any>} asyncImport 异步加载组件函数
  * @param {string} [componentName='default'] 需要加载的组件名
