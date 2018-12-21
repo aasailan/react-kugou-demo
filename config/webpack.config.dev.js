@@ -151,7 +151,7 @@ module.exports = {
             },
           },
 
-          // Compile .tsx?
+          // Compile .tsx
           {
             test: /\.(ts|tsx)$/,
             include: paths.appSrc,
@@ -213,24 +213,7 @@ module.exports = {
               },
               {
                 // loader: require.resolve('postcss-loader'),
-                loader: 'postcss-loader',
-                // options: {
-                //   // Necessary for external CSS imports to work
-                //   // https://github.com/facebookincubator/create-react-app/issues/2677
-                //   ident: 'postcss',
-                //   plugins: () => [
-                //     require('postcss-flexbugs-fixes'),
-                //     autoprefixer({
-                //       browsers: [
-                //         "Android >= 4",
-                //         "IOS >= 7",
-                //         "> 1%",
-                //         "last 2 versions"
-                //       ],
-                //       flexbox: 'no-2009',
-                //     }),
-                //   ],
-                // },
+                loader: 'postcss-loader'
               },
               {
                 loader: require.resolve('sass-loader'),

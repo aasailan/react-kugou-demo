@@ -2,7 +2,7 @@
  * @Author: qiao 
  * @Date: 2018-11-24 19:42:41 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-07 15:49:24
+ * @Last Modified time: 2018-12-21 14:04:23
  * 顶部tab组件
  */
 // import Api from '@/api';
@@ -31,7 +31,7 @@ interface IProps extends RouteComponentProps, ReturnType<typeof mapDispatchToPro
 class Tab extends React.PureComponent<IProps, IState> {
 
   state: IState = {
-    value: 'newSong',
+    value: 'newsong',
   };
 
   constructor(props: IProps) {
@@ -67,9 +67,9 @@ class Tab extends React.PureComponent<IProps, IState> {
       <div className="page">
         <MaterialTabs value={value} fullWidth={true} textColor="primary" indicatorColor="primary"
           onChange={this.onChangeTab}>
-          <MaterialTab value="newSong" label="新歌"/>
+          <MaterialTab value="newsong" label="新歌"/>
           <MaterialTab value="rank" label="排行"/>
-          <MaterialTab value="songList" label="歌单"/>
+          <MaterialTab value="songlist" label="歌单"/>
           <MaterialTab value="singer" label="歌手"/>
         </MaterialTabs>
         <div styleName="tab-container">

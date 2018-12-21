@@ -107,6 +107,7 @@ module.exports = {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
+      '@': path.resolve('src')
     },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).
@@ -160,7 +161,36 @@ module.exports = {
             include: paths.appSrc,
             use: [
               {
-                loader: require.resolve('ts-loader'),
+                loader: 'babel-loader',
+                options: {
+                  plugins: [
+                    '@babel/plugin-syntax-dynamic-import',
+                    '@babel/transform-react-jsx', // ts-loader不再处理jsx，所以需要babel处理
+                    [
+                      'react-css-modules', // babel插件处理css-modules
+                      {
+                        handleMissingStyleName: 'warn',
+                        generateScopedName: '[name]__[local]',
+                        context: paths.appSrc,
+                        exclude: 'node_modules',
+                        webpackHotModuleReloading: true, // 允许css热更替
+                        filetypes: {
+                          ".scss": {
+                            // 使用postcss-scss处理scss语法
+                            syntax: "postcss-scss",
+                            plugins: [
+                              // 使用postcss-nested插件处理scss的嵌套语法
+                              "postcss-nested"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  ]
+                },
+              },
+              {
+                loader: require.resolve('ts-loader'), // 在tsconfig.json里面设置 jsx: preserve，让typescript不处理jxs
                 options: {
                   // disable type checker - we will use it in fork plugin
                   transpileOnly: true,
@@ -169,6 +199,20 @@ module.exports = {
               },
             ],
           },
+          // {
+          //   test: /\.(ts|tsx)$/,
+          //   include: paths.appSrc,
+          //   use: [
+          //     {
+          //       loader: require.resolve('ts-loader'),
+          //       options: {
+          //         // disable type checker - we will use it in fork plugin
+          //         transpileOnly: true,
+          //         configFile: paths.appTsProdConfig,
+          //       },
+          //     },
+          //   ],
+          // },
           // The notation here is somewhat confusing.
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
@@ -182,7 +226,7 @@ module.exports = {
           // use the "style" loader inside the async code so CSS from them won't be
           // in the main CSS file.
           {
-            test: /\.css$/,
+            test: /\.css|scss|sass$/,
             loader: ExtractTextPlugin.extract(
               Object.assign(
                 {
@@ -196,30 +240,18 @@ module.exports = {
                     {
                       loader: require.resolve('css-loader'),
                       options: {
+                        modules: true,
                         importLoaders: 1,
                         minimize: true,
                         sourceMap: shouldUseSourceMap,
+                        localIdentName: '[name]__[local]'
                       },
                     },
                     {
-                      loader: require.resolve('postcss-loader'),
-                      options: {
-                        // Necessary for external CSS imports to work
-                        // https://github.com/facebookincubator/create-react-app/issues/2677
-                        ident: 'postcss',
-                        plugins: () => [
-                          require('postcss-flexbugs-fixes'),
-                          autoprefixer({
-                            browsers: [
-                              '>1%',
-                              'last 4 versions',
-                              'Firefox ESR',
-                              'not ie < 9', // React doesn't support IE8 anyway
-                            ],
-                            flexbox: 'no-2009',
-                          }),
-                        ],
-                      },
+                      loader: require.resolve('postcss-loader')
+                    },
+                    {
+                      loader: require.resolve('sass-loader'),
                     },
                   ],
                 },

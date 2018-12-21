@@ -2,21 +2,28 @@
  * @Author: qiao 
  * @Date: 2018-11-25 12:29:37 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-18 15:04:17
+ * @Last Modified time: 2018-12-21 16:11:09
  * api
  */
 import axios, { AxiosPromise, CancelToken } from 'axios';
 import { IHotSearch, INewSong, IRankInfo, IRanks, ISingerInfo, ISingerList, ISong, ISongInfo, ISongListInfo, ISongs } from './api';
 import { NetworkError } from './networkError';
 
-// TODO: 需要区分生产和开发环境
-const API_HOST = 'http://localhost:3000';
+// NOTE: 需要区分生产和开发环境
+const DEV_API_HOST = 'http://localhost:3000';
+const PRO_API_HOST = '这里填写你的生产ip地址与端口'; 
+let apiHost;
+if (process.env.NODE_ENV !== 'production') {
+  apiHost = DEV_API_HOST;
+} else {
+  apiHost = PRO_API_HOST;
+}
 
 export const service = axios.create({
   headers: {
     'X-Requested-With': 'XMLHttpRequest'
   },
-  baseURL: API_HOST,
+  baseURL: apiHost,
   withCredentials: true,
   timeout: 20000 // request timeout
 });
