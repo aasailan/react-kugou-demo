@@ -12,7 +12,7 @@ export interface IRoute extends RouteProps {
 export const newSongRoute: IRoute = {
   name: 'NewSong',
   exact: true,
-  path: '/tab/newSong',
+  path: '/tab/newsong',
   component: asyncComponent(() => import('@/page/Tab/NewSong/NewSong'), 'NewSongPage')
 };
 
@@ -26,7 +26,7 @@ export const rankRoute: IRoute = {
 export const songListRoute: IRoute = {
   name: 'SongList',
   exact: true,
-  path: '/tab/songList',
+  path: '/tab/songlist',
   component: asyncComponent(() => import('@/page/Tab/SongList/SongList'), 'SongListPage')
 };
 
