@@ -15,7 +15,8 @@
     "no-debugger": false,
     "no-console": false,
     "no-shadowed-variable": false,
-    "no-unused-expression": false
+    "no-unused-expression": false,
+    "max-classes-per-file": false
   },
   "jsRules": {
     "object-literal-sort-keys": false
