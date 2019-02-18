@@ -148,10 +148,11 @@ export function routeWithSubRoutes(route: IRoute, key: number | null = null) {
 };
 
 export function createRouteWithHook(route: IRoute, key: number | null = null) {
-  const { path, exact, routes: subRoutes, redirect, component } = route;
+  const { path, exact, routes: subRoutes, redirect, component, ...hook } = route;
   const Component = component as React.ComponentClass<any>;
   return (
     <RouteWithHook
+      {...hook}
       key={key !== null ? key : ''}
       path={path}
       exact={!!exact}
