@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import DetailPlayer from './components/DetailPlayer/DetailPlayer';
 import HeaderBarContainer from './components/HeaderBar/HeaderBar';
 import Player from './components/Player/Player';
-import { routes, routeWithSubRoutes } from './router';
+import { createRouteWithHook, routes } from './router';
 
 const theme = createMuiTheme({
   palette: {
@@ -31,7 +31,8 @@ class App extends React.Component {
               <Header/>
               <HeaderBarContainer />
               <Switch>
-                { routes.map((route, i) => routeWithSubRoutes(route, i)) }
+                {/* { routes.map((route, i) => routeWithSubRoutes(route, i)) } */}
+                { routes.map((route, i) => createRouteWithHook(route, i)) }
               </Switch>
               <Player/>
               <DetailPlayer/>

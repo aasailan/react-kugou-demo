@@ -2,13 +2,13 @@
  * @Author: qiao 
  * @Date: 2018-11-24 19:42:41 
  * @Last Modified by: qiao
- * @Last Modified time: 2018-12-21 14:04:23
+ * @Last Modified time: 2019-02-18 17:39:48
  * 顶部tab组件
  */
 // import Api from '@/api';
 import { ISetHeaderAction, setHeader } from '@/redux/actions/header';
 import { IHeaderState } from '@/redux/reducers/header';
-import { IRoute, routeWithSubRoutes } from '@/router';
+import { createRouteWithHook, IRoute } from '@/router';
 import MaterialTab from '@material-ui/core/Tab';
 import MaterialTabs from '@material-ui/core/Tabs';
 import React from 'react';
@@ -74,7 +74,8 @@ class Tab extends React.PureComponent<IProps, IState> {
         </MaterialTabs>
         <div styleName="tab-container">
           { 
-            routes.map((route, i) => routeWithSubRoutes(route, i)) 
+            // routes.map((route, i) => routeWithSubRoutes(route, i)) 
+            routes.map((route, i) => createRouteWithHook(route, i))
           }
         </div>
       </div>
