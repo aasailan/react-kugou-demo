@@ -8,7 +8,6 @@
 import Api from '@/api';
 import { IRank } from '@/api/api';
 import CardItem from '@/components/CardItem/CardItem';
-import { IPageComponentProps } from '@/page';
 import { IMyPageMethod, IMyPageState, pageWrapperGeneratorByExtends } from '@/page/pageWrapperByExtends';
 import { IRouteState as RankInfoRouteState } from '@/page/RankInfo/RankInfo';
 import { LocationDescriptorObject } from 'history';

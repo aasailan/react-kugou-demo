@@ -1,19 +1,35 @@
 import React from "react";
-import { Redirect, Route, RouteProps } from "react-router-dom";
+import { Redirect, Route, RouteComponentProps, RouteProps } from "react-router-dom";
 
 import asyncComponent from '@/utils/asyncComponent';
+import { RouteWithHook } from './hook';
 
 export interface IRoute extends RouteProps {
   name?: string;
   routes?: IRoute[];
   redirect?: string;
+  onEnter?: (params: RouteComponentProps) => any;
+  onChange?: (params: RouteComponentProps) => any;
+  onLeave?: (params: RouteComponentProps) => any;
 }
 
 export const newSongRoute: IRoute = {
   name: 'NewSong',
   exact: true,
   path: '/tab/newsong',
-  component: asyncComponent(() => import('@/page/Tab/NewSong/NewSong'), 'NewSongPage')
+  component: asyncComponent(() => import('@/page/Tab/NewSong/NewSong'), 'NewSongPage'),
+  onEnter: (params) => {
+    console.log('Route Hook onEnter in NewSong');
+    console.log(params);
+  },
+  onChange: (params) => {
+    console.log('Route Hook onChange in NewSong');
+    console.log(params);
+  },
+  onLeave: (params) => {
+    console.log('Route Hook onLeave in NewSong');
+    console.log(params);
+  },
 };
 
 export const rankRoute: IRoute = {
@@ -83,7 +99,19 @@ export const routes: IRoute[] = [
       songListRoute,
       singerRoute,
       searchRoute
-    ]
+    ],
+    onEnter: (params) => {
+      console.log('Route Hook onEnter in tab');
+      console.log(params);
+    },
+    onChange: (params) => {
+      console.log('Route Hook onChange in tab');
+      console.log(params);
+    },
+    onLeave: (params) => {
+      console.log('Route Hook onLeave in tab');
+      console.log(params);
+    },
   },
   rankInfoRoute,
   songListInfoRoute,
@@ -96,15 +124,40 @@ export const routes: IRoute[] = [
   }
 ];
 
-export function routeWithSubRoutes(route: IRoute, key: number | null = null, props: any = null) {
-  const { path, exact, routes: subRoutes, redirect, component: Component } = route;
+/**
+ * @description 输入路由配置，输出配置好Route组件
+ * @export
+ * @param {IRoute} route 自定义路由配置对象
+ * @param {(number | null)} [key=null]
+ * @returns <Route></Route>
+ */
+export function routeWithSubRoutes(route: IRoute, key: number | null = null) {
+  const { path, exact, routes: subRoutes, redirect, component } = route;
+  const Component = component as React.ComponentClass<any>;
   return (
     <Route
       key={key !== null ? key : ''}
       path={path}
       exact={!!exact}
       render={routeProps => (
-        Component ? <Component {...routeProps} {...props} routes={subRoutes}/> : redirect ? 
+        Component ? <Component {...routeProps} routes={subRoutes}/> : redirect ? 
+          <Redirect from={path as string} to={redirect}/> : null
+      )}
+    />
+  );
+};
+
+export function createRouteWithHook(route: IRoute, key: number | null = null) {
+  const { path, exact, routes: subRoutes, redirect, component, ...hook } = route;
+  const Component = component as React.ComponentClass<any>;
+  return (
+    <RouteWithHook
+      {...hook}
+      key={key !== null ? key : ''}
+      path={path}
+      exact={!!exact}
+      render={routeProps => (
+        Component ? <Component {...routeProps} routes={subRoutes}/> : redirect ? 
           <Redirect from={path as string} to={redirect}/> : null
       )}
     />
